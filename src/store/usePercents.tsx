@@ -1,139 +1,107 @@
 import { create } from "zustand";
 
-export interface PercentsStore {
-  // Блок 1: Знайти відсоток від числа
-  first_percent: string;
-  first_number: string;
-  resultFirst: number | null;
+export type OperationType = // TYPES
+  "percent_of" | "number_from_percent" | "add_percent" | "subtract_percent";
 
-  // Блок 2: Знайти число за його відсотком
-  second_percent: string;
-  second_number: string;
-  resultSecond: number | null;
-
-  // Блок 3: Додати відсоток до числа
-  third_percent: string;
-  third_number: string;
-  resultThird: number | null;
-
-  // Блок 4: Відняти відсоток від числа
-  fourth_percent: string;
-  fourth_number: string;
-  resultFourth: number | null;
-
-  // Actions
-  setFirstPercent: (value: string) => void;
-  setFirstNumber: (value: string) => void;
-
-  setSecondPercent: (value: string) => void;
-  setSecondNumber: (value: string) => void;
-
-  setThirdPercent: (value: string) => void;
-  setThirdNumber: (value: string) => void;
-
-  setFourthPercent: (value: string) => void;
-  setFourthNumber: (value: string) => void;
+export interface BlockState {
+  percent: string;
+  number: string;
+  result: number | null;
 }
 
+// Конфіг всіх блоків, просто сюди  додати НОВИЙ блок
+export const BLOCK_CONFIGS = {
+  first: { operation: "percent_of" as OperationType },
+  second: { operation: "number_from_percent" as OperationType },
+  third: { operation: "add_percent" as OperationType },
+  fourth: { operation: "subtract_percent" as OperationType },
+  fifth: { operation: "percent_of" as OperationType },
+} as const;
+
+export type BlockKey = keyof typeof BLOCK_CONFIGS; // генерує type BlockKey = "first" | "second" | "third" | "fourth" | "fifth"
+
+export interface PercentsStore {
+  blocks: Record<BlockKey, BlockState>;
+
+  updateBlock: (
+    key: BlockKey,
+    field: "percent" | "number",
+    value: string
+  ) => void;
+}
+
+const calculateResult = (
+  percent: string,
+  number: string,
+  operationType: OperationType
+): number | null => {
+  if (!percent || !number) return null;
+
+  const p = parseFloat(percent);
+  const n = parseFloat(number);
+
+  switch (operationType) {
+    case "percent_of":
+      return (p / 100) * n;
+
+    case "number_from_percent":
+      return (p / n) * 100;
+
+    case "add_percent":
+      return n + (p / 100) * n;
+
+    case "subtract_percent":
+      return n - (p / 100) * n;
+    // сюди нову операцію
+    default:
+      return null;
+  }
+};
+
+// Автоматично генеруємо початковий стан з конфігу
+// {
+//   first: { percent: "", number: "", result: null },
+//   second: { percent: "", number: "", result: null },
+//   third: { percent: "", number: "", result: null },
+//   fourth: { percent: "", number: "", result: null },
+//   fifth: { percent: "", number: "", result: null },
+// }
+const getInitialBlocks = (): Record<BlockKey, BlockState> => {
+  const blocks = {} as Record<BlockKey, BlockState>;
+  (Object.keys(BLOCK_CONFIGS) as BlockKey[]).forEach((key) => {
+    blocks[key] = { percent: "", number: "", result: null };
+  });
+  return blocks;
+};
+
 export const usePercentsStoreBase = create<PercentsStore>((set) => ({
-  first_percent: "",
-  first_number: "",
-  resultFirst: null,
+  blocks: getInitialBlocks(),
 
-  second_percent: "",
-  second_number: "",
-  resultSecond: null,
+  updateBlock: (key: BlockKey, field: "percent" | "number", value: string) => {
+    set((state) => {
+      const block = state.blocks[key];
+      const operationType = BLOCK_CONFIGS[key].operation;
 
-  third_percent: "",
-  third_number: "",
-  resultThird: null,
+      const newBlock = {
+        ...block,
+        [field]: value,
+      };
 
-  fourth_percent: "",
-  fourth_number: "",
-  resultFourth: null,
+      const result = calculateResult(
+        field === "percent" ? value : block.percent,
+        field === "number" ? value : block.number,
+        operationType
+      );
 
-  setFirstPercent: (value: string) => {
-    set((state) => ({
-      first_percent: value,
-      resultFirst:
-        value && state.first_number
-          ? (parseFloat(value) / 100) * parseFloat(state.first_number)
-          : null,
-    }));
-  },
-
-  setFirstNumber: (value: string) => {
-    set((state) => ({
-      first_number: value,
-      resultFirst:
-        value && state.first_percent
-          ? (parseFloat(state.first_percent) / 100) * parseFloat(value)
-          : null,
-    }));
-  },
-
-  setSecondPercent: (value: string) => {
-    set((state) => ({
-      second_percent: value,
-      resultSecond:
-        value && state.second_number
-          ? (parseFloat(value) / parseFloat(state.second_number)) * 100
-          : null,
-    }));
-  },
-
-  setSecondNumber: (value: string) => {
-    set((state) => ({
-      second_number: value,
-      resultSecond:
-        value && state.second_percent
-          ? (parseFloat(state.second_percent) / parseFloat(value)) * 100
-          : null,
-    }));
-  },
-
-  setThirdPercent: (value: string) => {
-    set((state) => ({
-      third_percent: value,
-      resultThird:
-        value && state.third_number
-          ? parseFloat(state.third_number) +
-            (parseFloat(value) / 100) * parseFloat(state.third_number)
-          : null,
-    }));
-  },
-
-  setThirdNumber: (value: string) => {
-    set((state) => ({
-      third_number: value,
-      resultThird:
-        value && state.third_percent
-          ? parseFloat(value) +
-            (parseFloat(state.third_percent) / 100) * parseFloat(value)
-          : null,
-    }));
-  },
-
-  setFourthPercent: (value: string) => {
-    set((state) => ({
-      fourth_percent: value,
-      resultFourth:
-        value && state.fourth_number
-          ? parseFloat(state.fourth_number) -
-            (parseFloat(value) / 100) * parseFloat(state.fourth_number)
-          : null,
-    }));
-  },
-
-  setFourthNumber: (value: string) => {
-    set((state) => ({
-      fourth_number: value,
-      resultFourth:
-        value && state.fourth_percent
-          ? parseFloat(value) -
-            (parseFloat(state.fourth_percent) / 100) * parseFloat(value)
-          : null,
-    }));
+      return {
+        blocks: {
+          ...state.blocks,
+          [key]: {
+            ...newBlock,
+            result,
+          },
+        },
+      };
+    });
   },
 }));
-// selector
