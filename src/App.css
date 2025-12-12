@@ -1,8 +1,11 @@
 #root {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
-  text-align: center;
+  /* Заберіть max-width: 1280px, margin: 0 auto, padding: 2rem;
+     щоб компонент Converter міг займати повну ширину екрана та
+     контролювати свій макет за допомогою класів Tailwind (max-w-4xl mx-auto) */
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+  width: 100%;
 }
 
 .logo {

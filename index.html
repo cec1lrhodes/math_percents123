@@ -1,6 +1,32 @@
 <!doctype html>
 <html lang="en">
   <head>
+    <script>
+      // Перевіряє тему в localStorage (де Zustand її зберігає) та застосовує клас 'dark'
+      // до <html> до завантаження React.
+      try {
+        const storageKey = "theme-storage";
+        const storedTheme = localStorage.getItem(storageKey);
+
+        if (storedTheme) {
+          const state = JSON.parse(storedTheme);
+          const theme = state.state.theme;
+
+          if (theme === "dark") {
+            document.documentElement.classList.add("dark");
+            document.documentElement.setAttribute("data-theme", "dark");
+          }
+        } else {
+          // Якщо localStorage порожній, використовуємо тему за замовчуванням (яка у вас 'light')
+          // Якщо хочете, щоб світла була завжди за замовчуванням:
+          document.documentElement.setAttribute("data-theme", "light");
+        }
+      } catch (e) {
+        console.error("Error reading theme from localStorage", e);
+      }
+    </script>
+
+    <link rel="stylesheet" href="/src/index.css" />
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />

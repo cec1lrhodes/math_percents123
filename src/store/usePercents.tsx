@@ -9,7 +9,7 @@ export interface BlockState {
   result: number | null;
 }
 
-// Конфіг всіх блоків, просто сюди  додати НОВИЙ блок
+// Конфіг всіх блоків, просто сюди  додати НОВИЙ блок +
 export const BLOCK_CONFIGS = {
   first: { operation: "percent_of" as OperationType },
   second: { operation: "number_from_percent" as OperationType },
@@ -28,8 +28,11 @@ export interface PercentsStore {
     field: "percent" | "number",
     value: string
   ) => void;
+
+  resetBlock: (key: BlockKey) => void; // передається унікальний ключ для first, second і спрацьовує коректне очищення
 }
 
+// MATH
 const calculateResult = (
   percent: string,
   number: string,
@@ -52,7 +55,7 @@ const calculateResult = (
 
     case "subtract_percent":
       return n - (p / 100) * n;
-    // сюди нову операцію
+    // --> СЮДИ НОВУ ОПЕРАЦІЮ, ЗА ПОТРЕБИ
     default:
       return null;
   }
@@ -60,18 +63,19 @@ const calculateResult = (
 
 // Автоматично генеруємо початковий стан з конфігу
 // {
-//   first: { percent: "", number: "", result: null },
-//   second: { percent: "", number: "", result: null },
-//   third: { percent: "", number: "", result: null },
+//   first: { percent: "", number: "", result: null }, 1-ітерація
+//   second: { percent: "", number: "", result: null }, 2-га
+//   third: { percent: "", number: "", result: null }, 3-тя і тд...
 //   fourth: { percent: "", number: "", result: null },
 //   fifth: { percent: "", number: "", result: null },
 // }
 const getInitialBlocks = (): Record<BlockKey, BlockState> => {
   const blocks = {} as Record<BlockKey, BlockState>;
   (Object.keys(BLOCK_CONFIGS) as BlockKey[]).forEach((key) => {
+    // key = "second" ітерація по ключам -> blocks["second"] = { percent: "", number: "", result: null };
     blocks[key] = { percent: "", number: "", result: null };
   });
-  return blocks;
+  return blocks; //{first...second...}
 };
 
 export const usePercentsStoreBase = create<PercentsStore>((set) => ({
@@ -79,12 +83,14 @@ export const usePercentsStoreBase = create<PercentsStore>((set) => ({
 
   updateBlock: (key: BlockKey, field: "percent" | "number", value: string) => {
     set((state) => {
-      const block = state.blocks[key];
-      const operationType = BLOCK_CONFIGS[key].operation;
+      const block = state.blocks[key]; // {first: { percent: "", number: "100", result: null },second {percent: ...}},
+
+      const operationType = BLOCK_CONFIGS[key].operation; // отримати тип операції
 
       const newBlock = {
-        ...block,
-        [field]: value,
+        // 1. bylo -> block = { percent: "", number: "100", result: null }
+        ...block, // percent: "", number: "100", result: null
+        [field]: value, // [field] стає ["percent"] → percent: "10" --> newBlock = { percent: "10", number: "100", result: null }
       };
 
       const result = calculateResult(
@@ -98,10 +104,19 @@ export const usePercentsStoreBase = create<PercentsStore>((set) => ({
           ...state.blocks,
           [key]: {
             ...newBlock,
-            result,
+            result, // перезапис із новим значенням
           },
         },
       };
     });
+  },
+
+  resetBlock: (key: BlockKey) => {
+    set((state) => ({
+      blocks: {
+        ...state.blocks,
+        [key]: { percent: "", number: "", result: null }, // reset do початкового стану
+      },
+    }));
   },
 }));

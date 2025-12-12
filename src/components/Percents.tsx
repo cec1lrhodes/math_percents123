@@ -35,25 +35,33 @@ const blockConfigs: BlockConfig[] = [
   },
   {
     key: "fifth",
-    title: "Твоя операція",
+    title: "нова операція",
     placeholderPercent: "...",
     placeholderNumber: "...",
   },
-  // new new new
+
+  // --> NEW {...}
 ];
 
 const Percents = () => {
   return (
-    <div>
-      {blockConfigs.map((config) => (
-        <Block
-          key={config.key}
-          blockKey={config.key}
-          title={config.title}
-          placeholderPercent={config.placeholderPercent}
-          placeholderNumber={config.placeholderNumber}
-        />
-      ))}
+    <div className="min-h-screen py-8 px-4 sm:py-12">
+      <div className="max-w-7xl mx-auto">
+        <h1 className="text-4xl sm:text-5xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-600 dark:from-blue-400 dark:to-indigo-400 mb-8">
+          Обчислення
+        </h1>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {blockConfigs.map((config) => (
+            <Block
+              key={config.key}
+              blockKey={config.key}
+              title={config.title}
+              placeholderPercent={config.placeholderPercent}
+              placeholderNumber={config.placeholderNumber}
+            />
+          ))}
+        </div>
+      </div>
     </div>
   );
 };
