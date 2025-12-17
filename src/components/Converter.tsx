@@ -26,13 +26,13 @@ const Converter = () => {
 
   // основна оптимізація PriceList, щоб не було зайвого ререндеру коли змінюється Converter а в ньому usdAmount/cryptoAmount
   useEffect(() => {
-    console.log("Converter mounted(router check)");
     if (usdAmount && !isNaN(Number(usdAmount)) && currentPrice) {
       const crypto = Number(usdAmount) / currentPrice;
       setCryptoAmount(crypto.toFixed(8));
     }
   }, [selectedCrypto, currentPrice]); // Коли змінюється вибір або ціна
 
+  // USD INPUT --> CRYPTO INPUT
   const handleUsdChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
       const value = e.target.value;
@@ -48,6 +48,7 @@ const Converter = () => {
     [currentPrice]
   );
 
+  // CRYPTO input
   const handleCryptoChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
       const value = e.target.value;
@@ -63,22 +64,16 @@ const Converter = () => {
     [currentPrice]
   );
 
+  // ВИБІР ВАЛЮТ
   const handleCryptoSelect = useCallback(
     (e: React.ChangeEvent<HTMLSelectElement>) => {
       const newCrypto = e.target.value as CryptoId;
       setSelectedCrypto(newCrypto);
-
-      if (usdAmount && !isNaN(Number(usdAmount))) {
-        const newPrice = getCryptoPrice(prices, newCrypto);
-        if (newPrice) {
-          const crypto = Number(usdAmount) / newPrice;
-          setCryptoAmount(crypto.toFixed(8));
-        }
-      }
     },
-    [usdAmount, prices]
+    []
   );
 
+  // ОБРОБНИК КНОПОК У СПИСКУ CryptoList
   const handleSelectCrypto = useCallback((cryptoId: CryptoId) => {
     setSelectedCrypto(cryptoId);
   }, []); // пусті залежності --> useEffect

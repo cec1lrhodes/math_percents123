@@ -8,6 +8,7 @@ interface ThemeState {
   toggleTheme: () => void;
   setTheme: (theme: Theme) => void;
 }
+
 export const useThemeStore = create<ThemeState>()(
   persist(
     (set) => ({
@@ -21,7 +22,7 @@ export const useThemeStore = create<ThemeState>()(
       setTheme: (theme) => set({ theme }),
     }),
     {
-      name: "theme-storage", // Зберігається в localStorage
+      name: "theme-storage", // localStorage
     }
   )
 );

@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 
-const CRYPTO_IDS = ["bitcoin", "ethereum", "tether", "binancecoin", "solana"];
+// const CRYPTO_IDS = ["bitcoin", "ethereum", "tether", "binancecoin", "solana"];
 
 // ТУТ ДОДАВАТИ НОВІ ВАЛЮТИ
 export const CRYPTO_CONFIG = {
@@ -30,13 +30,14 @@ export type CryptoPrices = {
 export type CryptoId = keyof typeof CRYPTO_CONFIG;
 
 const fetchCryptoPrice = async (): Promise<CryptoPrices> => {
-  const ids = Object.keys(CRYPTO_CONFIG).join(",");
+  const ids = Object.keys(CRYPTO_CONFIG).join(","); // ../price?ids=bitcoin,ethereum,solana...--> res ${ids}
+
   const res = await fetch(
     `https://api.coingecko.com/api/v3/simple/price?ids=${ids}&vs_currencies=usd`
   );
 
   if (!res.ok) {
-    throw new Error("Failed to fetch Bitcoin price");
+    throw new Error("Failed to fetch crypto prices");
   }
 
   const data: CryptoPrices = await res.json();
@@ -49,6 +50,7 @@ export const useCryptoPrices = () => {
     queryFn: fetchCryptoPrice,
     refetchInterval: 60000, // Оновлюємо кожну хвилину
     staleTime: 30000, // Дані свіжі 30 секунд
+    placeholderData: (previousData) => previousData,
   });
 };
 

@@ -1,16 +1,14 @@
 import { createFileRoute } from "@tanstack/react-router";
+import NewsComponent from "../components/NEWS/NewsComponent";
 
-export const Route = createFileRoute("/about")({
+export const Route = createFileRoute("/news")({
   component: RouteComponent,
 });
 
 function RouteComponent() {
   return (
     <div>
-      <button>button</button>
-      <div>
-        <input placeholder="123" />
-      </div>
+      <NewsComponent />
     </div>
   );
 }

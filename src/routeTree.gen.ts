@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as PercentsRouteImport } from './routes/percents'
+import { Route as NewsRouteImport } from './routes/news'
 import { Route as ConverterRouteImport } from './routes/converter'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
@@ -17,6 +18,11 @@ import { Route as IndexRouteImport } from './routes/index'
 const PercentsRoute = PercentsRouteImport.update({
   id: '/percents',
   path: '/percents',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const NewsRoute = NewsRouteImport.update({
+  id: '/news',
+  path: '/news',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ConverterRoute = ConverterRouteImport.update({
@@ -39,12 +45,14 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/converter': typeof ConverterRoute
+  '/news': typeof NewsRoute
   '/percents': typeof PercentsRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/converter': typeof ConverterRoute
+  '/news': typeof NewsRoute
   '/percents': typeof PercentsRoute
 }
 export interface FileRoutesById {
@@ -52,20 +60,22 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/converter': typeof ConverterRoute
+  '/news': typeof NewsRoute
   '/percents': typeof PercentsRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/about' | '/converter' | '/percents'
+  fullPaths: '/' | '/about' | '/converter' | '/news' | '/percents'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/about' | '/converter' | '/percents'
-  id: '__root__' | '/' | '/about' | '/converter' | '/percents'
+  to: '/' | '/about' | '/converter' | '/news' | '/percents'
+  id: '__root__' | '/' | '/about' | '/converter' | '/news' | '/percents'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AboutRoute: typeof AboutRoute
   ConverterRoute: typeof ConverterRoute
+  NewsRoute: typeof NewsRoute
   PercentsRoute: typeof PercentsRoute
 }
 
@@ -76,6 +86,13 @@ declare module '@tanstack/react-router' {
       path: '/percents'
       fullPath: '/percents'
       preLoaderRoute: typeof PercentsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/news': {
+      id: '/news'
+      path: '/news'
+      fullPath: '/news'
+      preLoaderRoute: typeof NewsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/converter': {
@@ -106,6 +123,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AboutRoute: AboutRoute,
   ConverterRoute: ConverterRoute,
+  NewsRoute: NewsRoute,
   PercentsRoute: PercentsRoute,
 }
 export const routeTree = rootRouteImport

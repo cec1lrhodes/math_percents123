@@ -2,6 +2,7 @@ import { useThemeStore } from "../store/useThemeStore";
 
 const ThemeToggle = () => {
   // const { theme, toggleTheme } = useThemeStore(); ВИКЛИКАЛО ВЕСЬ store = ререндри зайві
+
   const theme = useThemeStore((s) => s.theme);
   const toggleTheme = useThemeStore((s) => s.toggleTheme);
   const isDark = theme === "dark";

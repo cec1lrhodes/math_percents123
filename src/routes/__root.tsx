@@ -4,35 +4,42 @@ import { memo } from "react";
 import ThemeToggle from "../components/ThemeToggle";
 import { useThemeStore } from "../store/useThemeStore";
 import { useEffect } from "react";
+import { sideBarStyles } from "../stylesTail/SideBarStyles";
 
 const Sidebar = memo(() => (
-  <aside className="w-64 bg-white dark:bg-gray-800 shadow-lg">
+  <aside className={sideBarStyles.headerLinks}>
     <div className="p-6">
-      <h2 className="text-2xl font-bold text-blue-600 dark:text-blue-400 mb-8">
-        Крипто Конвертер
-      </h2>
+      <h2 className={sideBarStyles.h2Text}>Крипто Конвертер</h2>
 
       <nav className="space-y-2">
         <Link
           to="/converter"
-          className="block px-4 py-3 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-blue-50 dark:hover:bg-gray-700 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+          className={sideBarStyles.links}
           activeProps={{
-            className:
-              "bg-blue-500 text-white hover:bg-blue-600 hover:text-white dark:bg-blue-600 dark:hover:bg-blue-700",
+            className: sideBarStyles.activeLinks,
           }}
         >
-          💱 Конвертер валют
+          Конвертер валют
         </Link>
 
         <Link
           to="/percents"
-          className="block px-4 py-3 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-blue-50 dark:hover:bg-gray-700 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+          className={sideBarStyles.links}
           activeProps={{
-            className:
-              "bg-blue-500 text-white hover:bg-blue-600 hover:text-white dark:bg-blue-600 dark:hover:bg-blue-700",
+            className: sideBarStyles.activeLinks,
           }}
         >
-          🧮 Обчислення
+          Обчислення
+        </Link>
+
+        <Link
+          to="/news"
+          className={sideBarStyles.links}
+          activeProps={{
+            className: sideBarStyles.activeLinks,
+          }}
+        >
+          Новини
         </Link>
       </nav>
     </div>
@@ -43,9 +50,9 @@ function RootComponent() {
   const theme = useThemeStore((state) => state.theme);
 
   useEffect(() => {
-    console.log("Current theme:", theme); // Для debug
+    // console.log("Current theme:", theme); //  debug
     document.documentElement.setAttribute("data-theme", theme);
-    // Також додаємо клас для dark: варіантів Tailwind
+
     if (theme === "dark") {
       document.documentElement.classList.add("dark");
     } else {
@@ -54,13 +61,13 @@ function RootComponent() {
   }, [theme]);
 
   return (
-    // ВИДАЛЯЄМО: bg-gray-50 dark:bg-gray-900
     <div className="flex min-h-screen text-gray-900 dark:text-white">
       <div className="fixed top-4 right-4 z-50">
         <ThemeToggle />
       </div>
       <Sidebar />
       <main className="flex-1">
+        {/* Коли користувач переходить на `/converter` або `/percents`, вміст цих сторінок відображається саме тут CHILDREN МАРШРУТИ*/}
         <Outlet />
       </main>
       <TanStackRouterDevtools position="bottom-right" />
