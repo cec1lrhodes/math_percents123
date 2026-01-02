@@ -41,6 +41,15 @@ const Sidebar = memo(() => (
         >
           Новини
         </Link>
+        <Link
+          to="/article"
+          className={sideBarStyles.links}
+          activeProps={{
+            className: sideBarStyles.activeLinks,
+          }}
+        >
+          Статті
+        </Link>
       </nav>
     </div>
   </aside>
